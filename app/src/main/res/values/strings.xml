@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">ChangeResolutionVideo</string>
+    <string name="download_file_description">Downloading File,  please wait...</string>
+
+    <string name="permission_read_external_rationale">Sử dụng chức năng gửi file. Ứng dụng cần được cấp quyền truy cập file của bạn.</string>
+    <string name="permission_read_external_storage_never_ask_again">Quyền truy cập file đã bị từ chối và không yêu cầu cấp lại quyền.</string>
+    <string name="permission_read_external_storage_denied">Quyền truy cập file đã bị từ chối. Vui lòng xem xét việc cấp quyền truy cập file để có thể sử dụng chức năng gửi file.</string>
+    <string name="permission_write_external_rationale">Sử dụng chức năng lưu file. Ứng dụng cần được cấp quyền ghi file trên thiết bị của bạn. </string>
+    <string name="permission_write_external_storage_never_ask_again">Quyền ghi file trên thiết bị của bạn đã bị từ chối và không yêu cầu cấp lại quyền.</string>
+    <string name="permission_write_external_storage_denied">Quyền ghi file trên thiết bị của bạn đã bị từ chối. Vui lòng xem xét việc cấp quyền ghi file trên thiết bị của bạn để có thể sử dụng chức năng lưu file.</string>
+    <string name="prompt_select_file">Select Files to upload</string>
+</resources>
