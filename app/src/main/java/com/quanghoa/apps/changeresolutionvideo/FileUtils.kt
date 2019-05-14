@@ -1,16 +1,9 @@
-/* gkc_hash_code : 01D7X81N69YH66J2QZB4DSG51M */
-package vn.com.eschool.base.util
-
 import android.app.DownloadManager
 import android.app.DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED
 import android.content.*
 import android.database.Cursor
 import android.database.DatabaseUtils
 import android.graphics.Bitmap
-import android.media.MediaCodec
-import android.media.MediaExtractor
-import android.media.MediaFormat
-import android.media.MediaMuxer
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
@@ -25,10 +18,8 @@ import com.quanghoa.apps.changeresolutionvideo.R
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
-import java.nio.ByteBuffer
 import java.text.DecimalFormat
 import java.util.*
-import kotlin.collections.HashMap
 
 object FileUtils {
 
@@ -439,7 +430,7 @@ object FileUtils {
     }
 
     fun createTemporaryVideoFile(applicationContext: Context): File {
-        val nameFile = String.format("labhok-%s.mp4", UUID.randomUUID().toString())
+        val nameFile = String.format("temp-%s.mp4", UUID.randomUUID().toString())
         val outputDir = File(applicationContext.filesDir, "labhok_videos")
         if (!outputDir.exists()) {
             outputDir.mkdirs()
@@ -447,57 +438,21 @@ object FileUtils {
         return File(outputDir, nameFile)
     }
 
-    fun compressedVideoFile(applicationContext: Context, videoPath: String): File {
-        val extractor = MediaExtractor()
-        extractor.setDataSource(videoPath)
-        val trackCount = extractor.trackCount
-
-        val outFile = createTemporaryVideoFile(applicationContext)
-        val muxer = MediaMuxer(outFile.absolutePath, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4)
-
-        val indexMap = HashMap<Int, Int>(trackCount)
-        for (i in 0 until trackCount) {
-            extractor.selectTrack(i)
-
-            val format = extractor.getTrackFormat(i)
-            val mine = format.getString(MediaFormat.KEY_MIME)
-
-            if (mine != null && mine.startsWith("video")) {
-                val currWidth = format.getInteger(MediaFormat.KEY_WIDTH)
-                val currHeight = format.getInteger(MediaFormat.KEY_HEIGHT)
-                format.setInteger(MediaFormat.KEY_WIDTH, if (currWidth > currHeight) 960 else 540)
-                format.setInteger(MediaFormat.KEY_HEIGHT, if (currWidth > currHeight) 540 else 960)
-                format.setInteger("max-width", format.getInteger(MediaFormat.KEY_WIDTH))
-                format.setInteger("max-height", format.getInteger(MediaFormat.KEY_HEIGHT))
-            }
-
-            val dstIndex = muxer.addTrack(format)
-            indexMap.put(i, dstIndex)
-        }
-
-        var sawEOS = false
-        val bufferSize = 1024 * 256
-        val offset = 100
-        val dstBuf = ByteBuffer.allocate(bufferSize)
-        val bufferInfo = MediaCodec.BufferInfo()
-        muxer.start()
-        while (!sawEOS) {
-            bufferInfo.offset = offset
-            bufferInfo.size = extractor.readSampleData(dstBuf, offset)
-            if (bufferInfo.size < 0) {
-                sawEOS = true
-                bufferInfo.size = 0
-            } else {
-                bufferInfo.presentationTimeUs = extractor.sampleTime
-                bufferInfo.flags = extractor.sampleFlags
-                val trackIndex = extractor.sampleTrackIndex
-                muxer.writeSampleData(indexMap.get(trackIndex)!!, dstBuf, bufferInfo)
-                extractor.advance()
-            }
-        }
-        muxer.stop()
-        muxer.release()
-        return outFile
+    fun getNameFile(file: File): String? {
+        return file.nameWithoutExtension
     }
 
+    fun deleteFile(file: File) {
+        if(file.exists()){
+            file.delete()
+        }
+    }
+
+
+
+    /* - https://www.bugcodemaster.com/article/changing-resolution-video-using-ffmpeg
+       - https://androidadvanced.com/2017/03/17/ffmpeg-video-editor/
+       - https://github.com/bravobit/FFmpeg-Android
+     */
 }
+
